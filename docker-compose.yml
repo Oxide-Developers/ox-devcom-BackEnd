@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  devcom_db:
+    image: postgres:12-alpine
+    container_name: devcom_db
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=testing321
+      - POSTGRES_DB=testdb
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    environment:
+      - PORT=80
+      - SECRET_KEY=81131d1c04ec397e56924d2e3371748773a804327593a01a75a57fb1ad4928315f8ca4ec35351695900954d4dd4ae06033da3a836ce059e139dd1f47c05afab1
+      - DATABASE_URL=postgresql://test:testing321@devcom_db:5432/testdb
+      - ALLOWED_HOSTS=*
+    ports:
+      - 9090:80
+    depends_on:
+      - devcom_db
+
+volumes:
+  data:
